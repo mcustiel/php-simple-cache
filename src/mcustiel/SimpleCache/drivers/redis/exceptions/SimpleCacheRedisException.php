@@ -11,7 +11,7 @@ class SimpleCacheRedisException extends SimpleCacheException
         self::AUTHENTICATION_FAILED => 'Authentication failed'
     );
 
-    public function __construct($exceptionCode,\Exception $previous = null)
+    public function __construct($exceptionCode, \Exception $previous = null)
     {
         parent::__construct(self::$exceptions[$exceptionCode], $exceptionCode, $previous);
     }

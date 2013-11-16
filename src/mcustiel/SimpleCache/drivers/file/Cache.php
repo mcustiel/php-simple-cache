@@ -5,8 +5,7 @@ use mcustiel\SimpleCache\interfaces\CacheInterface;
 
 class Cache implements CacheInterface
 {
-
-    const INVALID_KEY_CHARS_REGEXP = '/[‰-z]/';
+    const INVALID_KEY_CHARS_REGEXP = '/[^a-z]/i';
     private $path;
 
     /**
@@ -41,11 +40,21 @@ class Cache implements CacheInterface
         file_put_contents($this->getFileName($key), serialize($value));
     }
 
+    /**
+     *
+     * @param unknown $key
+     * @return mixed
+     */
     protected function fixKeyChars($key)
     {
         return preg_replace(self::INVALID_KEY_CHARS_REGEXP, '', $key);
     }
 
+    /**
+     *
+     * @param unknown $key
+     * @return string
+     */
     protected function getFileName($key)
     {
         return "{$this->path}{$key}";

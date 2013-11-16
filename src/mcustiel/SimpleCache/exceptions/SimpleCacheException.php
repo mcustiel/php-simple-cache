@@ -13,7 +13,7 @@ class SimpleCacheException extends \Exception
         self::INIT_FAILED => 'Failed to initialize the cache system'
     );
 
-    public function __construct($exceptionCode,\Exception $previous = null)
+    public function __construct($exceptionCode, \Exception $previous = null)
     {
         parent::__construct(self::$exceptions[$exceptionCode], $exceptionCode, $previous);
     }

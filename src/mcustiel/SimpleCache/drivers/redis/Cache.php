@@ -2,6 +2,7 @@
 namespace mcustiel\SimpleCache\drivers\redis;
 
 use mcustiel\SimpleCache\interfaces\CacheInterface;
+use mcustiel\SimpleCache\drivers\redis\exceptions\SimpleCacheRedisException;
 
 class Cache implements CacheInterface
 {
@@ -9,14 +10,16 @@ class Cache implements CacheInterface
 
     public function __construct()
     {
-        $this->connection = new \SQLite3(':memory:');
+        $this->connection = new \Redis();
     }
 
     /**
      */
     public function init(\stdClass $initData = null)
     {
-        $this->connection->exec('CREATE TABLE collection (key STRING UNIQUE,  value STRING)');
+        $this->connection->connect($initData->host, $initData->port, $initData->timeout);
+        $this->authenticate($initData->password);
+        $this->selectDatabase($initData->database);
     }
 
     /**
@@ -30,23 +33,32 @@ class Cache implements CacheInterface
      */
     public function get($key)
     {
-        return $this->connection->get($key);
+        return unserialize($this->connection->get($key));
     }
 
     /**
      */
-    public function set($key, $value,\stdClass $options = null)
+    public function set($key, $value, \stdClass $options = null)
     {
-        return $this->connection->set($key, $value, $options->timeLife);
+        return $this->connection->set($key, serialize($value), $options->timeLife);
     }
 
+    /**
+     *
+     * @param unknown $password
+     * @throws SimpleCacheRedisException
+     */
     private function authenticate($password)
     {
         if ($password && ! $this->connection->auth($password)) {
-            // throw exception
+            throw new SimpleCacheRedisException(SimpleCacheRedisException::AUTHENTICATION_FAILED);
         }
     }
 
+    /**
+     *
+     * @param unknown $database
+     */
     private function selectDatabase($database)
     {
         if ($database) {
