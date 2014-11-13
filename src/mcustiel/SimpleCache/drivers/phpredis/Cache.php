@@ -1,11 +1,14 @@
 <?php
-namespace mcustiel\SimpleCache\drivers\redis;
+namespace mcustiel\SimpleCache\drivers\phpredis;
 
 use mcustiel\SimpleCache\interfaces\CacheInterface;
-use mcustiel\SimpleCache\drivers\redis\exceptions\RedisAuthenticationException;
+use mcustiel\SimpleCache\drivers\Key;
+use mcustiel\SimpleCache\drivers\phpredis\exceptions\RedisAuthenticationException;
 
 class Cache implements CacheInterface
 {
+    const DEFAULT_HOST = 'localhost';
+
     private $connection;
 
     public function __construct(\Redis $redisConnection)
@@ -19,39 +22,43 @@ class Cache implements CacheInterface
      */
     public function init(\stdClass $initData = null)
     {
-        $this->connection->connect(
-            $initData->host,
-            $initData->port,
-            $initData->timeout
+        if ($initData === null) {
+            $this->connection->connect(self::DEFAULT_HOST);
+        } else {
+            $this->connection->connect(
+                isset($initData->host) ? $initData->host : self::DEFAULT_HOST,
+                isset($initData->port) ? $initData->port : null,
+                isset($initData->timeoutInSeconds) ? $initData->timeoutInSeconds : null,
+                null,
+                isset($initData->retryDelayInMillis) ? $initData->retryDelayInMillis : null
+            );
+            $this->authenticate($initData->password);
+            $this->selectDatabase($initData->database);
+        }
+    }
+
+    /**
+     */
+    public function get(Key $key)
+    {
+        $value = $this->connection->get($key);
+        return $value === false? null : unserialize($value);
+    }
+
+    /**
+     */
+    public function set(Key $key, $value, \stdClass $options = null)
+    {
+        return $this->connection->psetex(
+            $key,
+            serialize($value),
+            isset($options->timeToLive) ? $options->timeToLive : null
         );
-        $this->authenticate($initData->password);
-        $this->selectDatabase($initData->database);
     }
 
-    /**
-     */
-    public function exists($key)
+    public function delete(Key $key)
     {
-        return $this->connection->get($key) !== false;
-    }
-
-    /**
-     */
-    public function get($key)
-    {
-        return unserialize($this->connection->get($key));
-    }
-
-    /**
-     */
-    public function set($key, $value, \stdClass $options = null)
-    {
-        return $this->connection->psetex($key, serialize($value), $options->timeToLive);
-    }
-
-    public function delete($key)
-    {
-        $this->connection->delete($key);
+        $this->connection->delete($key->getKeyName());
     }
 
     /**
@@ -61,8 +68,10 @@ class Cache implements CacheInterface
      */
     private function authenticate($password)
     {
-        if (! $this->connection->auth($password)) {
-            throw new RedisAuthenticationException();
+        if (isset($password)) {
+            if (! $this->connection->auth($password)) {
+                throw new RedisAuthenticationException();
+            }
         }
     }
 

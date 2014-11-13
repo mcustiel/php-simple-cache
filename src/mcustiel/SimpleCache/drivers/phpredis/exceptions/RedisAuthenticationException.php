@@ -1,5 +1,5 @@
 <?php
-namespace mcustiel\SimpleCache\drivers\redis\exceptions;
+namespace mcustiel\SimpleCache\drivers\phpredis\exceptions;
 
 use mcustiel\SimpleCache\exceptions\SimpleCacheException;
 
@@ -12,7 +12,7 @@ class RedisAuthenticationException extends SimpleCacheException
     {
         parent::__construct(
             self::DEFAULT_MESSAGE,
-            self::EXCEPTION_CODE,
+            self::DEFAULT_CODE,
             $previous
         );
     }

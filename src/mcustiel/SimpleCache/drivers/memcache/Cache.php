@@ -20,13 +20,14 @@ class Cache implements CacheInterface
     public function init(\stdClass $initData = null)
     {
         if ($initData === null) {
-            return $this->connection->connect();
+            $this->connection->connect();
+        } else {
+            $this->connection->connect(
+                isset($initData->host) ? $initData->host : null,
+                isset($initData->port) ? $initData->port : null,
+                isset($initData->timeout) ? $initData->timeout : null
+            );
         }
-        return $this->connection->connect(
-            $initData->host,
-            $initData->port,
-            $initData->timeout
-        );
     }
 
     /**
