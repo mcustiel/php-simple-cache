@@ -19,10 +19,14 @@ class Cache implements CacheInterface
      */
     public function init(\stdClass $initData = null)
     {
+        if ($initData === null) {
+            return $this->connection->connect();
+        }
         return $this->connection->connect(
             $initData->host,
             $initData->port,
-            $initData->timeout);
+            $initData->timeout
+        );
     }
 
     /**
@@ -41,8 +45,8 @@ class Cache implements CacheInterface
         return $this->connection->set(
             $key->getKeyName(),
             $value,
-            $options->flags,
-            isset($options->timeToLive) ? round($options->timeToLive / 1000) : 0
+            $options !== null? $options->flags : null,
+            isset($options->timeToLive) ? floor($options->timeToLive / 1000) : 0
         );
     }
 
