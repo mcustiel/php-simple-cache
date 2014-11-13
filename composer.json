@@ -1,8 +1,9 @@
 {
 	"keywords" : [
-		"form",
-		"generator",
-		"annotations"
+		"cache",
+		"manager",
+		"abstraction",
+		"drivers"
 	],
 	"autoload" : {
 		"psr-4" : {

@@ -13,7 +13,7 @@ class SimpleCache
     {
         $class = $this->getFullManagerPath($cacheManager);
         if (! class_exists($class)) {
-            throw new UnknownDriverException($class);
+            throw new UnknownDriverException($cacheManager);
         }
         return new $class;
     }
