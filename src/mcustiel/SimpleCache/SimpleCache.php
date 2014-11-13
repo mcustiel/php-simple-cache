@@ -1,11 +1,25 @@
 <?php
 namespace mcustiel\SimpleCache;
 
+use mcustiel\SimpleCache\exceptions\UnknownDriverException;
 class SimpleCache
 {
+    /**
+     *
+     * @param unknown $cacheManager
+     * @return \mcustiel\SimpleCache\interfaces\CacheInterface
+     */
     public function getCacheManager($cacheManager)
     {
-        $class = "\\mcustiel\\SimpleCache\\drivers\\{$cacheManager}\\Cache";
+        $class = $this->getFullManagerPath($cacheManager);
+        if (! class_exists($class)) {
+            throw new UnknownDriverException($class);
+        }
         return new $class;
+    }
+
+    public function getFullManagerPath($cacheManager)
+    {
+        return "\\mcustiel\\SimpleCache\\drivers\\{$cacheManager}\\Cache";
     }
 }

@@ -1,0 +1,22 @@
+{
+	"keywords" : [
+		"form",
+		"generator",
+		"annotations"
+	],
+	"autoload" : {
+		"psr-4" : {
+			"mcustiel\\SimpleCache\\" : "src"
+		}
+	},
+	"name" : "mcustiel/php-simple-cache",
+	"type" : "library",
+	"description" : "A simple library to abstract different types of cache",
+	"license" : "GPL-2.0+",
+	"require" : {
+		"php" : ">=5.5"
+	},
+	"require-dev" : {
+		"phpunit/phpunit" : "4.3.*"
+	}
+}

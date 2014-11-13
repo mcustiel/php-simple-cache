@@ -1,13 +1,15 @@
 <?php
 namespace mcustiel\SimpleCache\interfaces;
 
+use mcustiel\SimpleCache\drivers\Key;
+
 interface CacheInterface
 {
-    public function init(\stdClass $initData = null);
+    function init(\stdClass $initData = null);
 
-    public function exists($key);
+    function get(Key $key);
 
-    public function get($key);
+    function set(Key $key, $value, \stdClass $options = null);
 
-    public function set($key, $value, \stdClass $options = null);
+    function delete(Key $key);
 }
