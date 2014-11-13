@@ -25,7 +25,7 @@ abstract class BaseCacheDriver implements CacheInterface
         if ($timeToLive === null || $timeToLive < 0) {
             $timeToLive = $this->defaultTimeout;
         }
-        $this->keysMap[$key] = new CacheLogRegister($key,
+        $this->keysMap[$key->getKeyName()] = new CacheLogRegister($key,
             microtime() + $timeToLive * 1000);
     }
 

@@ -31,8 +31,6 @@ class Cache extends BaseCacheDriver
         }
         $this->path = rtrim($initData->filePath, DIRECTORY_SEPARATOR)
             . DIRECTORY_SEPARATOR;
-
-        return true;
     }
 
     /**
@@ -68,7 +66,7 @@ class Cache extends BaseCacheDriver
     public function delete(Key $key)
     {
         if ($this->exists($key)) {
-            parent::delete($key->getKeyName());
+            parent::deleteKey($key->getKeyName());
             $this->fileService->delete($this->getFileName($key));
         }
     }
