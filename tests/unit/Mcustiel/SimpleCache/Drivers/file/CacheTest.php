@@ -21,7 +21,7 @@ class CacheTest extends \PHPUnit_Framework_TestCase
         $this->cache = new Cache($this->fileService);
 
         $initData = new \stdClass();
-        $initData->filePath = self::FILES_PATH;
+        $initData->filesPath = self::FILES_PATH;
         $this->cache->init($initData);
     }
 

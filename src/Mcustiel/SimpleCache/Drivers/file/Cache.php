@@ -26,10 +26,10 @@ class Cache extends BaseCacheDriver
      */
     public function init(\stdClass $initData = null)
     {
-        if (!isset($initData->filePath)) {
+        if (!isset($initData->filesPath)) {
             throw new FilesCachePathNotAssigned();
         }
-        $this->path = rtrim($initData->filePath, DIRECTORY_SEPARATOR)
+        $this->path = rtrim($initData->filesPath, DIRECTORY_SEPARATOR)
             . DIRECTORY_SEPARATOR;
     }
 

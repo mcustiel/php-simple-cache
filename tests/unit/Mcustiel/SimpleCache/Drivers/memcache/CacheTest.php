@@ -27,7 +27,7 @@ class CacheTest extends \PHPUnit_Framework_TestCase
         $data = new \stdClass();
         $data->host = 'localhost';
         $data->port = 1234;
-        $data->timeout = 1000;
+        $data->timeoutInSeconds = 1000;
 
         $this->memcache
             ->expects($this->once())

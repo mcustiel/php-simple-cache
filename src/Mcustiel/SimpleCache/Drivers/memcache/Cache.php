@@ -25,7 +25,7 @@ class Cache implements CacheInterface
             $this->connection->connect(
                 isset($initData->host) ? $initData->host : null,
                 isset($initData->port) ? $initData->port : null,
-                isset($initData->timeout) ? $initData->timeout : null
+                isset($initData->timeoutInSeconds) ? $initData->timeoutInSeconds : null
             );
         }
     }
