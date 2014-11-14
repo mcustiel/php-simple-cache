@@ -136,4 +136,6 @@ $config->filesPath = '/path/to/cache/files';
 
 ### Considerations
 
-Please have in mind that each driver is different in it's implementation. There's no much difference between phpredis and memcache drivers, but file driver does not auto expire 
+Please have in mind that each driver is different in it's implementation. There's no much difference between phpredis and memcache drivers, but file driver does not auto expire cache.
+For the file case I added support for timeout but that makes it a slow cache, so for the future I have as a TODO, to create a "garbage collector" script that processes expired files and remove the logic to delete expired files in get method. 
+Use file driver just in very rare cases in which you don't have access to memcache or redis.
