@@ -5,7 +5,7 @@ use Mcustiel\SimpleCache\Types\Key;
 use Mcustiel\SimpleCache\Interfaces\CacheInterface;
 use Mcustiel\SimpleCache\Types\CacheLogRegister;
 
-abstract class BaseCacheDriver implements CacheInterface
+abstract class NotAutoExpirableCache implements CacheInterface
 {
     /**
      * Keys data
@@ -42,6 +42,11 @@ abstract class BaseCacheDriver implements CacheInterface
     public function deleteKey($keyName)
     {
         unset($this->keysMap[$keyName]);
+    }
+
+    public function getAllKeyNames()
+    {
+        return array_keys($this->keysMap);
     }
 
     abstract public function init(\stdClass $initData = null);

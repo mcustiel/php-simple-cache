@@ -2,11 +2,11 @@
 namespace Mcustiel\SimpleCache\Drivers\file;
 
 use Mcustiel\SimpleCache\Types\Key;
-use Mcustiel\SimpleCache\Drivers\BaseCacheDriver;
+use Mcustiel\SimpleCache\Drivers\NotAutoExpirableCache;
 use Mcustiel\SimpleCache\Drivers\file\Exceptions\FilesCachePathNotAssigned;
 use Mcustiel\SimpleCache\Drivers\file\Utils\FileService;
 
-class Cache extends BaseCacheDriver
+class Cache extends NotAutoExpirableCache
 {
     private $fileService;
 
