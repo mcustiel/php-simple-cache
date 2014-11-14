@@ -134,5 +134,6 @@ $config = new \stdClass()
 $config->filesPath = '/path/to/cache/files';
 ```
 
-TODO
-====
+### Considerations
+
+Please have in mind that each driver is different in it's implementation. There's no much difference between phpredis and memcache drivers, but file driver does not auto expire 

@@ -9,7 +9,7 @@ interface CacheInterface
 
     function get(Key $key);
 
-    function set(Key $key, $value, \stdClass $options = null);
+    function set(Key $key, $value, $ttlInMillis);
 
     function delete(Key $key);
 }

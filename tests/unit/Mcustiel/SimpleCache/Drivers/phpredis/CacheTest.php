@@ -104,8 +104,6 @@ class CacheTest extends \PHPUnit_Framework_TestCase
 
     public function testIfSetsValueWithTimeToLiveValue()
     {
-        $options = new \stdClass();
-        $options->timeToLive = 5000;
         $this->redis
             ->expects($this->once())
             ->method('psetex')
@@ -114,20 +112,7 @@ class CacheTest extends \PHPUnit_Framework_TestCase
                 serialize(self::CACHED_DATA),
                 5000
             );
-        $this->cache->set($this->key, self::CACHED_DATA, $options);
-    }
-
-    public function testIfSetsValueWithoutOptions()
-    {
-        $this->redis
-            ->expects($this->once())
-            ->method('psetex')
-            ->with(
-                $this->equalTo($this->key->getKeyName()),
-                serialize(self::CACHED_DATA),
-                null
-            );
-        $this->cache->set($this->key, self::CACHED_DATA);
+        $this->cache->set($this->key, self::CACHED_DATA, 5000);
     }
 
     public function testIfRedisDeleteIsCalled()

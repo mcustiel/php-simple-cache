@@ -3,6 +3,7 @@ namespace Unit\SimpleCache\Drivers\file;
 
 use Mcustiel\SimpleCache\Drivers\file\Cache;
 use Mcustiel\SimpleCache\Types\Key;
+use Mcustiel\SimpleCache\Drivers\file\Utils\FileCacheRegister;
 
 class CacheTest extends \PHPUnit_Framework_TestCase
 {
@@ -53,6 +54,28 @@ class CacheTest extends \PHPUnit_Framework_TestCase
         $this->assertNull($this->cache->get($this->key));
     }
 
+    public function testGetWithExpiredKey()
+    {
+        $this->fileService
+            ->method('exists')
+            ->with($this->equalTo($this->key->getKeyName()))
+            ->will($this->returnValue(true));
+
+        $this->fileService
+            ->method('getFrom')
+            ->with($this->equalTo($this->key->getKeyName()))
+            ->will($this->returnValue(
+                serialize(new FileCacheRegister(self::CACHED_DATA, microtime() - 5000000))
+            ));
+
+        $this->fileService
+            ->expects($this->once())
+            ->method('delete')
+            ->with($this->equalTo($this->key->getKeyName()));
+
+        $this->assertNull($this->cache->get($this->key));
+    }
+
     public function testIfGetReturnsSavedValue()
     {
         $this->fileService
@@ -63,7 +86,9 @@ class CacheTest extends \PHPUnit_Framework_TestCase
         $this->fileService
             ->method('getFrom')
             ->with($this->equalTo($this->key->getKeyName()))
-            ->will($this->returnValue(serialize(self::CACHED_DATA)));
+            ->will($this->returnValue(serialize(
+                new FileCacheRegister(self::CACHED_DATA, microtime() + 5000000))
+            ));
 
         $this->assertEquals(self::CACHED_DATA, $this->cache->get($this->key));
     }
@@ -75,9 +100,13 @@ class CacheTest extends \PHPUnit_Framework_TestCase
             ->method('saveIn')
             ->with(
                 $this->equalTo($this->key->getKeyName()),
-                $this->equalTo(serialize(self::CACHED_DATA))
+                $this->callback(function($value) {
+                    $data = unserialize($value);
+                    return $data->getData() == self::CACHED_DATA
+                        && $data->getExpiration() > microtime() / 1000;
+                })
             );
-        $this->cache->set($this->key, self::CACHED_DATA);
+        $this->cache->set($this->key, self::CACHED_DATA, 5000);
     }
 
     public function testIfDeleteIsNotCalledWhenKeyDoesNotExist()

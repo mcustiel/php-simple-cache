@@ -51,12 +51,12 @@ class Cache implements CacheInterface
 
     /**
      */
-    public function set(Key $key, $value, \stdClass $options = null)
+    public function set(Key $key, $value, $ttlInMillis)
     {
         return $this->connection->psetex(
             $key,
             serialize($value),
-            isset($options->timeToLive) ? $options->timeToLive : null
+            $ttlInMillis
         );
     }
 

@@ -68,31 +68,16 @@ class CacheTest extends \PHPUnit_Framework_TestCase
 
     public function testIfSetsValueInMemcacheWithTimeToLive()
     {
-        $options = new \stdClass;
-        $options->flags = ['aFlag ', true];
-        $options->timeToLive = 1000;
         $this->memcache
             ->expects($this->once())
             ->method('set')
-            ->with($this->equalTo($this->key->getKeyName()),
+            ->with(
+                $this->equalTo($this->key->getKeyName()),
                 $this->equalTo(self::CACHED_DATA),
-                $this->equalTo($options->flags),
-                $this->equalTo(1)
+                null,
+                $this->greaterThanOrEqual(time() + 1)
             );
-        $this->cache->set($this->key, self::CACHED_DATA, $options);
-    }
-
-    public function testIfUsesDefaultValueWhenOptionsOmmited()
-    {
-        $this->memcache
-            ->expects($this->once())
-            ->method('set')
-            ->with($this->equalTo($this->key->getKeyName()),
-                $this->equalTo(self::CACHED_DATA),
-                $this->identicalTo(null),
-                $this->equalTo(0)
-            );
-        $this->cache->set($this->key, self::CACHED_DATA);
+        $this->cache->set($this->key, self::CACHED_DATA, 1000);
     }
 
     public function testIfCallsDeleteOnMemcache()

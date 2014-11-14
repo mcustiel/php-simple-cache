@@ -41,13 +41,13 @@ class Cache implements CacheInterface
 
     /**
      */
-    public function set(Key $key, $value, \stdClass $options = null)
+    public function set(Key $key, $value, $ttlInMillis)
     {
         return $this->connection->set(
             $key->getKeyName(),
             $value,
-            $options !== null? $options->flags : null,
-            isset($options->timeToLive) ? floor($options->timeToLive / 1000) : 0
+            null,
+            time() + floor($ttlInMillis / 1000)
         );
     }
 

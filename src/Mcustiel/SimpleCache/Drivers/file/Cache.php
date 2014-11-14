@@ -5,6 +5,7 @@ use Mcustiel\SimpleCache\Interfaces\CacheInterface;
 use Mcustiel\SimpleCache\Types\Key;
 use Mcustiel\SimpleCache\Drivers\file\Exceptions\FilesCachePathNotAssigned;
 use Mcustiel\SimpleCache\Drivers\file\Utils\FileService;
+use Mcustiel\SimpleCache\Drivers\file\Utils\FileCacheRegister;
 
 class Cache implements CacheInterface
 {
@@ -31,20 +32,26 @@ class Cache implements CacheInterface
      */
     public function get(Key $key)
     {
-        if (! $this->exists($key)) {
-            return null;
+        if ($this->exists($key)) {
+            $register = unserialize($this->fileService->getFrom($key->getKeyName()));
+            if ($register->getExpiration() >= microtime()) {
+                return $register->getData();
+            }
+            $this->delete($key);
         }
-
-        return unserialize($this->fileService->getFrom($key->getKeyName()));
+        return null;
     }
 
     /**
      */
-    public function set(Key $key, $value, \stdClass $options = null)
+    public function set(Key $key, $value, $ttlInMillis)
     {
         $this->fileService->saveIn(
             $key->getKeyName(),
-            serialize($value)
+            serialize(new FileCacheRegister(
+                $value,
+                microtime() + $ttlInMillis * 1000
+            ))
         );
     }
 

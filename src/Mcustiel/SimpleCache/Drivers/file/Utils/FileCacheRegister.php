@@ -1,19 +1,38 @@
 <?php
-namespace Mcustiel\SimpleCache\Types;
+namespace Mcustiel\SimpleCache\Drivers\file\Utils;
 
-class CacheLogRegister
+use Mcustiel\SimpleCache\Types\Key;
+
+class FileCacheRegister implements \Serializable
 {
-    private $key;
-    private $timeout;
+    private $data;
+    private $expiration;
 
-    public function __construt(Key $key, $timeout)
+    public function __construct($data, $expiration)
     {
-        $this->key = $key;
-        $this->timeout = $timeout;
+        $this->data = $data;
+        $this->expiration = $expiration;
     }
 
-    public function getTimeout()
+    public function getExpiration()
     {
-        return $this->timeout;
+        return $this->expiration;
+    }
+
+    public function getData()
+    {
+        return $this->data;
+    }
+
+    public function serialize()
+    {
+        return serialize([$this->data, $this->expiration]);
+    }
+
+    public function unserialize($serialized)
+    {
+        $data = unserialize($serialized);
+        $this->data = $data[0];
+        $this->expiration = $data[1];
     }
 }
