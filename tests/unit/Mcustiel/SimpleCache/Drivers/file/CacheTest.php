@@ -6,7 +6,6 @@ use Mcustiel\SimpleCache\Types\Key;
 
 class CacheTest extends \PHPUnit_Framework_TestCase
 {
-    const FILES_PATH = '/tmp/testDir';
     const CACHED_DATA = 'This is the data in the cache';
 
     private $cache;
@@ -17,12 +16,11 @@ class CacheTest extends \PHPUnit_Framework_TestCase
     {
         $this->key = new Key('potato');
 
-        $this->fileService = $this->getMock('Mcustiel\\SimpleCache\\Drivers\\file\\Utils\\FileService');
+        $this->fileService = $this
+            ->getMockBuilder('Mcustiel\\SimpleCache\\Drivers\\file\\Utils\\FileService')
+            ->disableOriginalConstructor()
+            ->getMock();
         $this->cache = new Cache($this->fileService);
-
-        $initData = new \stdClass();
-        $initData->filesPath = self::FILES_PATH;
-        $this->cache->init($initData);
     }
 
     /**
@@ -49,7 +47,7 @@ class CacheTest extends \PHPUnit_Framework_TestCase
     {
         $this->fileService
             ->method('exists')
-            ->with($this->equalTo(self::FILES_PATH . '/' . $this->key->getKeyName()))
+            ->with($this->equalTo($this->key->getKeyName()))
             ->will($this->returnValue(false));
 
         $this->assertNull($this->cache->get($this->key));
@@ -59,12 +57,12 @@ class CacheTest extends \PHPUnit_Framework_TestCase
     {
         $this->fileService
             ->method('exists')
-            ->with($this->equalTo(self::FILES_PATH . '/' . $this->key->getKeyName()))
+            ->with($this->equalTo($this->key->getKeyName()))
             ->will($this->returnValue(true));
 
         $this->fileService
             ->method('getFrom')
-            ->with($this->equalTo(self::FILES_PATH . '/' . $this->key->getKeyName()))
+            ->with($this->equalTo($this->key->getKeyName()))
             ->will($this->returnValue(serialize(self::CACHED_DATA)));
 
         $this->assertEquals(self::CACHED_DATA, $this->cache->get($this->key));
@@ -76,7 +74,7 @@ class CacheTest extends \PHPUnit_Framework_TestCase
             ->expects($this->once())
             ->method('saveIn')
             ->with(
-                $this->equalTo(self::FILES_PATH . '/' . $this->key->getKeyName()),
+                $this->equalTo($this->key->getKeyName()),
                 $this->equalTo(serialize(self::CACHED_DATA))
             );
         $this->cache->set($this->key, self::CACHED_DATA);
@@ -86,7 +84,7 @@ class CacheTest extends \PHPUnit_Framework_TestCase
     {
         $this->fileService
             ->method('exists')
-            ->with($this->equalTo(self::FILES_PATH . '/' . $this->key->getKeyName()))
+            ->with($this->equalTo($this->key->getKeyName()))
             ->will($this->returnValue(false));
 
         $this->fileService
@@ -100,13 +98,13 @@ class CacheTest extends \PHPUnit_Framework_TestCase
     {
         $this->fileService
             ->method('exists')
-            ->with($this->equalTo(self::FILES_PATH . '/' . $this->key->getKeyName()))
+            ->with($this->equalTo($this->key->getKeyName()))
             ->will($this->returnValue(true));
 
         $this->fileService
             ->expects($this->once())
             ->method('delete')
-            ->with($this->equalTo(self::FILES_PATH . '/' . $this->key->getKeyName()));
+            ->with($this->equalTo($this->key->getKeyName()));
 
         $this->cache->delete($this->key);
     }
