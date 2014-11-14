@@ -1,12 +1,12 @@
 <?php
 namespace Mcustiel\SimpleCache\Drivers\file;
 
+use Mcustiel\SimpleCache\Interfaces\CacheInterface;
 use Mcustiel\SimpleCache\Types\Key;
-use Mcustiel\SimpleCache\Drivers\NotAutoExpirableCache;
 use Mcustiel\SimpleCache\Drivers\file\Exceptions\FilesCachePathNotAssigned;
 use Mcustiel\SimpleCache\Drivers\file\Utils\FileService;
 
-class Cache extends NotAutoExpirableCache
+class Cache implements CacheInterface
 {
     private $fileService;
 
@@ -42,10 +42,6 @@ class Cache extends NotAutoExpirableCache
      */
     public function set(Key $key, $value, \stdClass $options = null)
     {
-        parent::setKey(
-            $key,
-            isset($options->timeToLive) ? $options->timeToLive : null
-        );
         $this->fileService->saveIn(
             $key->getKeyName(),
             serialize($value)
@@ -59,7 +55,6 @@ class Cache extends NotAutoExpirableCache
     public function delete(Key $key)
     {
         if ($this->exists($key)) {
-            parent::deleteKey($key->getKeyName());
             $this->fileService->delete($key->getKeyName());
         }
     }
