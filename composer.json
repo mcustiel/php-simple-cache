@@ -7,10 +7,10 @@
 	],
 	"autoload" : {
 		"psr-4" : {
-			"mcustiel\\SimpleCache\\" : "src"
+			"Mcustiel\\SimpleCache\\" : "src"
 		}
 	},
-	"name" : "mcustiel/php-simple-cache",
+	"name" : "Mcustiel/php-simple-cache",
 	"type" : "library",
 	"description" : "A simple library to abstract different types of cache",
 	"license" : "GPL-2.0+",
