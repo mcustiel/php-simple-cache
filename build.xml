@@ -54,7 +54,7 @@
 	<!-- ============================================ -->
 	<target name="codecheck">
 		<phingcall target="codestyle" />
-		<phingcall target="mess" />
+		<!--<phingcall target="mess" />-->
 		<phingcall target="copypaste" />
 	</target>
 
@@ -88,7 +88,7 @@
 			<formatter type="xml" outfile="${dir.reports}/pmd.xml" />
 		</phpmd>
 	</target>
-
+	
 	<!-- ============================================ -->
 	<!-- Target: copypaste (detects copy/paste in code) -->
 	<!-- ============================================ -->
@@ -116,7 +116,7 @@
 	<target name="unittests">
 		<echo msg="Running unit tests..." />
 		<exec
-			command="phpunit -d zend.enable_gc=0 --log-junit ${dir.reports}/phpunit/phpunit.xml --coverage-clover ${dir.reports.coverage}/clover.xml --coverage-html ${dir.reports.coverage}/ --testdox-html ${dir.reports}/phpunit/testdox.html -c ${dir.tests}"
+			command="./vendor/bin/phpunit -d zend.enable_gc=0 --log-junit ${dir.reports}/phpunit/phpunit.xml --coverage-clover ${dir.reports.coverage}/clover.xml --coverage-html ${dir.reports.coverage}/ --testdox-html ${dir.reports}/phpunit/testdox.html -c ${dir.tests}"
 			outputProperty="output" returnProperty="returnout" />
 		<echo msg="${output}" />
 		<if>
