@@ -32,7 +32,7 @@ php-simple-config also supports composer, it isn't yet published into packagist 
         }
     ],
     "require": {
-        "mcustiel/php-simple-config": "dev-master"
+        "mcustiel/php-simple-cache": "dev-master"
     }
 }
 ```
