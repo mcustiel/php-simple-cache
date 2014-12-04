@@ -20,11 +20,10 @@ Installation
 This library supports PSR-4 so you can just download the code and map your autoloader to use it.
 
 ###Composer
-php-simple-config also supports composer, it isn't yet published into packagist but it could be downloaded using something like this (not tested, sorry):
+php-simple-config also supports composer, it isn't yet published into packagist but it could be downloaded using something like this:
 
 ```javascript
 {
-    "name": "mcustiel/php-simple-cache",
     "repositories": [
         {
             "type": "vcs",
