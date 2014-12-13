@@ -82,6 +82,10 @@ class Cache implements CacheInterface
         }
     }
 
+    public function finish()
+    {
+    }
+
     /**
      */
     private function exists(Key $key)

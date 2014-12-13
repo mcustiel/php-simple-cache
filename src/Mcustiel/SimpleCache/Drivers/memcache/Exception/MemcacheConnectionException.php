@@ -15,19 +15,20 @@
  * You should have received a copy of the GNU General Public License
  * along with php-simple-cache.  If not, see <http://www.gnu.org/licenses/>.
  */
-namespace Mcustiel\SimpleCache\Interfaces;
+namespace Mcustiel\SimpleCache\Drivers\memcache\Exceptions;
 
-use Mcustiel\SimpleCache\Types\Key;
+use Mcustiel\SimpleCache\Exceptions\PhpSimpleCacheException;
 
-interface CacheInterface
+class MemcacheConnectionException extends PhpSimpleCacheException
 {
-    function init(\stdClass $initData = null);
+    const DEFAULT_CODE = 2200;
 
-    function get(Key $key);
-
-    function set(Key $key, $value, $ttlInMillis);
-
-    function delete(Key $key);
-
-    function finish();
+    public function __construct($message, \Exception $previous = null)
+    {
+        parent::__construct(
+            $message,
+            self::DEFAULT_CODE,
+            $previous
+        );
+    }
 }

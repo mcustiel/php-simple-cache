@@ -19,6 +19,7 @@ namespace Mcustiel\SimpleCache\Drivers\memcache;
 
 use Mcustiel\SimpleCache\Interfaces\CacheInterface;
 use Mcustiel\SimpleCache\Types\Key;
+use Mcustiel\SimpleCache\Drivers\memcache\Exceptions\MemcacheConnectionException;
 
 class Cache implements CacheInterface
 {
@@ -38,12 +39,52 @@ class Cache implements CacheInterface
         if ($initData === null) {
             $this->connection->connect();
         } else {
-            $this->connection->connect(
-                isset($initData->host) ? $initData->host : null,
-                isset($initData->port) ? $initData->port : null,
-                isset($initData->timeoutInSeconds) ? $initData->timeoutInSeconds : null
-            );
+            $this->openConnection($initData);
         }
+    }
+
+    private function openConnection(\stdClass $initData)
+    {
+        $connectionOptions = $this->parseConnectionData($initData);
+        if (isset($this->persistent) && (boolean) $this->persistent) {
+            $this->persistentConnect($connectionOptions);
+        } else {
+            $this->notPersistentConnect($connectionOptions);
+        }
+    }
+
+    private function notPersistentConnect(\stdClass $connectionOptions)
+    {
+        if (!$this->connection->connect(
+            $connectionOptions->host,
+            $connectionOptions->port,
+            $connectionOptions->timeout
+        )) {
+            throw new MemcacheConnectionException("Can't connect to memcache server with config: "
+                . var_export($connectionOptions, true));
+        };
+    }
+
+    private function persistentConnect(\stdClass $connectionOptions)
+    {
+        if (!$this->connection->pconnect(
+            $connectionOptions->host,
+            $connectionOptions->port,
+            $connectionOptions->timeout
+        )) {
+            throw new MemcacheConnectionException("Can't connect to memcache server with config: "
+                . var_export($connectionOptions, true));
+        };
+    }
+
+    private function parseConnectionData(\stdClass $initData)
+    {
+        $return = new \stdClass;
+        $return->host = isset($initData->host) ? $initData->host : self::DEFAULT_HOST;
+        $return->port = isset($initData->port) ? $initData->port : null;
+        $return->timeout = isset($initData->timeoutInSeconds) ? $initData->timeoutInSeconds : null;
+
+        return $return;
     }
 
     /**
@@ -74,5 +115,10 @@ class Cache implements CacheInterface
     public function delete(Key $key)
     {
         $this->connection->delete($key->getKeyName());
+    }
+
+    public function finish()
+    {
+        $this->connection->close();
     }
 }

@@ -88,7 +88,7 @@ class Cache implements CacheInterface
         }
     }
 
-    private function parseConnectionData($initData)
+    private function parseConnectionData(\stdClass $initData)
     {
         $return = new \stdClass;
         $return->host = isset($initData->host) ? $initData->host : self::DEFAULT_HOST;
