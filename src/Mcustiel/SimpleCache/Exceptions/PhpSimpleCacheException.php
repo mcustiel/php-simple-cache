@@ -15,17 +15,8 @@
  * You should have received a copy of the GNU General Public License
  * along with php-simple-cache.  If not, see <http://www.gnu.org/licenses/>.
  */
-namespace Mcustiel\SimpleCache\Drivers\file\Exceptions;
+namespace Mcustiel\SimpleCache\Exceptions;
 
-use Mcustiel\SimpleCache\Exceptions\PhpSimpleCacheException;
-
-class FilesCachePathNotAssigned extends PhpSimpleCacheException
+class PhpSimpleCacheException extends \Exception
 {
-    const DEFAULT_MESSAGE = 'The path to the directory that stores cacheFiles is not set';
-    const DEFAULT_CODE = 2000;
-
-    public function __construct(\Exception $previous = null)
-    {
-        parent::__construct(self::DEFAULT_MESSAGE, self::DEFAULT_CODE, $previous);
-    }
 }

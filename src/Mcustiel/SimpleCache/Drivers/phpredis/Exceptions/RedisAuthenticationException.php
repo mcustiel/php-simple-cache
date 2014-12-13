@@ -17,12 +17,12 @@
  */
 namespace Mcustiel\SimpleCache\Drivers\phpredis\Exceptions;
 
-use Mcustiel\SimpleCache\Exceptions\SimpleCacheException;
+use Mcustiel\SimpleCache\Exceptions\PhpSimpleCacheException;
 
-class RedisAuthenticationException extends SimpleCacheException
+class RedisAuthenticationException extends PhpSimpleCacheException
 {
     const DEFAULT_MESSAGE = 'Authentication failed';
-    const DEFAULT_CODE = 2100;
+    const DEFAULT_CODE = 2101;
 
     public function __construct(\Exception $previous = null)
     {

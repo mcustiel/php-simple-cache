@@ -18,8 +18,8 @@
 namespace Unit\SimpleCache\Drivers\file;
 
 use Mcustiel\SimpleCache\Drivers\file\Cache;
-use Mcustiel\SimpleCache\Types\Key;
 use Mcustiel\SimpleCache\Drivers\file\Utils\FileCacheRegister;
+use Mcustiel\SimpleCache\Types\Key;
 
 class CacheTest extends \PHPUnit_Framework_TestCase
 {

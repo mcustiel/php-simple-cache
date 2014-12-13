@@ -17,7 +17,7 @@
  */
 namespace Mcustiel\SimpleCache\Exceptions;
 
-class UnknownDriverException extends SimpleCacheException
+class UnknownDriverException extends PhpSimpleCacheException
 {
     const DEFAULT_MESSAGE = 'Unknown cache manager driver: %s';
     const EXCEPTION_CODE = 1000;

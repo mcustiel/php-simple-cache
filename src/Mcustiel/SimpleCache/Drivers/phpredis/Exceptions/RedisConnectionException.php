@@ -15,8 +15,20 @@
  * You should have received a copy of the GNU General Public License
  * along with php-simple-cache.  If not, see <http://www.gnu.org/licenses/>.
  */
-namespace Mcustiel\SimpleCache\Exceptions;
+namespace Mcustiel\SimpleCache\Drivers\phpredis\Exceptions;
 
-class SimpleCacheException extends \Exception
+use Mcustiel\SimpleCache\Exceptions\PhpSimpleCacheException;
+
+class RedisConnectionException extends PhpSimpleCacheException
 {
+    const DEFAULT_CODE = 2100;
+
+    public function __construct($message, \Exception $previous = null)
+    {
+        parent::__construct(
+            $message,
+            self::DEFAULT_CODE,
+            $previous
+        );
+    }
 }

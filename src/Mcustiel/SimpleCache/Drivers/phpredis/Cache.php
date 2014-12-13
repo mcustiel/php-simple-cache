@@ -20,6 +20,7 @@ namespace Mcustiel\SimpleCache\Drivers\phpredis;
 use Mcustiel\SimpleCache\Interfaces\CacheInterface;
 use Mcustiel\SimpleCache\Types\Key;
 use Mcustiel\SimpleCache\Drivers\phpredis\Exceptions\RedisAuthenticationException;
+use Mcustiel\SimpleCache\Drivers\phpredis\Exceptions\RedisConnectionException;
 
 class Cache implements CacheInterface
 {
@@ -27,33 +28,23 @@ class Cache implements CacheInterface
 
     private $connection;
 
-    public function __construct(\Redis $redisConnection)
+    public function __construct(\Redis $redisConnection= null)
     {
-        $this->connection = $redisConnection === null ?
-            new \Redis() :
-            $redisConnection;
+        $this->connection = $redisConnection === null ? new \Redis() : $redisConnection;
     }
 
     /**
      */
     public function init(\stdClass $initData = null)
     {
-        if ($initData === null) {
-            $this->connection->connect(self::DEFAULT_HOST);
-        } else {
-            $this->connection->connect(
-                isset($initData->host) ? $initData->host : self::DEFAULT_HOST,
-                isset($initData->port) ? $initData->port : null,
-                isset($initData->timeoutInSeconds) ? $initData->timeoutInSeconds : null,
-                null,
-                isset($initData->retryDelayInMillis) ? $initData->retryDelayInMillis : null
-            );
-            if (isset($initData->password)) {
-                $this->authenticate($initData->password);
+        try {
+            if ($initData === null) {
+                $this->connection->connect(self::DEFAULT_HOST);
+            } else {
+                $this->openConnection($initData);
             }
-            if (isset($initData->database)) {
-                $this->connection->select($initData->database);
-            }
+        } catch (\RedisException $e) {
+            throw new RedisConnectionException("Redis driver exception was thrown.", $e);
         }
     }
 
@@ -71,8 +62,8 @@ class Cache implements CacheInterface
     {
         return $this->connection->psetex(
             $key,
-            serialize($value),
-            $ttlInMillis
+            $ttlInMillis,
+            serialize($value)
         );
     }
 
@@ -81,6 +72,10 @@ class Cache implements CacheInterface
         $this->connection->delete($key->getKeyName());
     }
 
+    public function finish()
+    {
+        $this->connection->close();
+    }
     /**
      *
      * @param string $password
@@ -91,5 +86,77 @@ class Cache implements CacheInterface
         if (! $this->connection->auth($password)) {
             throw new RedisAuthenticationException();
         }
+    }
+
+    private function parseConnectionData($initData)
+    {
+        $return = new \stdClass;
+        $return->host = isset($initData->host) ? $initData->host : self::DEFAULT_HOST;
+        $return->port = isset($initData->port) ? $initData->port : null;
+        $return->timeout = isset($initData->timeoutInSeconds)
+            ? $initData->timeoutInSeconds : null;
+        $return->retryDelay = isset($initData->retryDelayInMillis)
+            ? $initData->retryDelayInMillis : null;
+
+        return $return;
+    }
+
+    private function notPersistentConnect(\stdClass $connectionOptions)
+    {
+        if (!$this->connection->connect(
+            $connectionOptions->host,
+            $connectionOptions->port,
+            $connectionOptions->timeout,
+            null,
+            $connectionOptions->retryDelay
+        )) {
+            throw new RedisConnectionException("Can't connect to redis server with config: "
+                . var_export($connectionOptions, true));
+        };
+    }
+
+    private function persistentConnect(\stdClass $connectionOptions, $persistentId)
+    {
+        if (!$this->connection->pconnect(
+            $connectionOptions->host,
+            $connectionOptions->port,
+            $connectionOptions->timeout,
+            $persistentId,
+            $connectionOptions->retryDelay
+        )) {
+            throw new RedisConnectionException("Can't connect to redis server with config: "
+                . var_export($connectionOptions, true));
+        };
+    }
+
+    private function openConnection(\stdClass $initData)
+    {
+        $connectionOptions = $this->parseConnectionData($initData);
+        if (isset($initData->persistentId) && !empty($initData->persistentId)) {
+            $this->persistentConnect($connectionOptions, persistentId);
+        } else {
+            $this->notPersistentConnect($connectionOptions);
+        }
+        $this->executePostConnectionOptions($initData);
+    }
+
+    private function executePostConnectionOptions(\stdClass $initData)
+    {
+        if (isset($initData->password)) {
+            $this->authenticate($initData->password);
+        }
+        if (isset($initData->database)) {
+            $this->selectDatabase($initData->database);
+        }
+    }
+
+    private function selectDatabase($database)
+    {
+        $db = $database + 0;
+        if (!is_numeric($database) || !is_integer($db) || $db < 0) {
+            throw new RedisConnectionException("Can't select database '{$database}'. "
+            . "Should be a natural number.");
+        }
+        $this->connection->select( $database);
     }
 }

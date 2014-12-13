@@ -24,7 +24,7 @@ class SimpleCacheTest extends \PHPUnit_Framework_TestCase
     /**
      * Unit under test
      *
-     * @var Mcustiel\SimpleCache\SimpleCache
+     * @var Unit\SimpleCache\SimpleCache
      */
     private $simpleCache;
 

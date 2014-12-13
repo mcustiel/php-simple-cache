@@ -58,7 +58,8 @@ class CacheTest extends \PHPUnit_Framework_TestCase
         $this->redis
             ->expects($this->once())
             ->method('connect')
-            ->with($this->equalTo('localhost'), null, null, null, null);
+            ->with($this->equalTo('localhost'), null, null, null, null)
+            ->will($this->returnValue(true));
         $this->redis
             ->expects($this->never())
             ->method('auth');
@@ -76,7 +77,7 @@ class CacheTest extends \PHPUnit_Framework_TestCase
         $options->timeoutInSeconds = 5;
         $options->retryDelayInMillis = 500;
         $options->password = 'passwd';
-        $options->database = 'db';
+        $options->database = 0;
 
         $this->redis
             ->expects($this->once())
@@ -87,7 +88,8 @@ class CacheTest extends \PHPUnit_Framework_TestCase
                 $this->equalTo($options->timeoutInSeconds),
                 null,
                 $this->equalTo($options->retryDelayInMillis)
-            );
+            )
+            ->will($this->returnValue(true));
         $this->redis
             ->expects($this->once())
             ->method('auth')
@@ -96,7 +98,67 @@ class CacheTest extends \PHPUnit_Framework_TestCase
         $this->redis
             ->expects($this->once())
             ->method('select')
-            ->with($this->equalTo($options->database));
+            ->with($this->equalTo(0));
+        $this->cache->init($options);
+    }
+
+    /**
+     * @expectedException        \Mcustiel\SimpleCache\Drivers\phpredis\Exceptions\RedisConnectionException
+     * @expectedExceptionMessage Can't select database 'invalid'. Should be a natural number.
+     */
+    public function testDatabaseInvalidString()
+    {
+        $options = new \stdClass();
+        $options->host = 'host';
+        $options->database = 'invalid';
+
+        $this->redis
+            ->expects($this->once())
+            ->method('connect')
+            ->with($this->equalTo($options->host), null, null, null, null)
+            ->will($this->returnValue(true));
+        $this->redis
+            ->expects($this->never())
+            ->method('select');
+        $this->cache->init($options);
+    }
+
+    /**
+     * @expectedException        \Mcustiel\SimpleCache\Drivers\phpredis\Exceptions\RedisConnectionException
+     * @expectedExceptionMessage Can't select database '3.5'. Should be a natural number.
+     */
+    public function testDatabaseInvalidFloat()
+    {
+        $options = new \stdClass();
+        $options->host = 'host';
+        $options->database = 3.5;
+
+        $this->redis
+            ->expects($this->once())
+            ->method('connect')
+            ->with($this->equalTo($options->host), null, null, null, null)
+            ->will($this->returnValue(true));
+        $this->redis
+            ->expects($this->never())
+            ->method('select');
+        $this->cache->init($options);
+    }
+
+    public function testDatabaseIsNumericString()
+    {
+        $options = new \stdClass();
+        $options->host = 'host';
+        $options->database = '2';
+
+        $this->redis
+            ->expects($this->once())
+            ->method('connect')
+            ->with($this->equalTo($options->host), null, null, null, null)
+            ->will($this->returnValue(true));
+        $this->redis
+            ->expects($this->once())
+            ->method('select')
+            ->with($this->equalTo(2));
         $this->cache->init($options);
     }
 
@@ -125,8 +187,8 @@ class CacheTest extends \PHPUnit_Framework_TestCase
             ->method('psetex')
             ->with(
                 $this->equalTo($this->key->getKeyName()),
-                serialize(self::CACHED_DATA),
-                5000
+                $this->equalTo(5000),
+                $this->equalTo(serialize(self::CACHED_DATA))
             );
         $this->cache->set($this->key, self::CACHED_DATA, 5000);
     }

@@ -16,7 +16,9 @@
 	"description" : "A simple library to abstract different types of cache",
 	"license" : "GPL-2.0+",
 	"require" : {
-		"php" : ">=5.5"
+		"php" : ">=5.5",
+		"ext-redis" : ">=2.2.0",
+		"ext-memcache" : ">=3.0.0"
 	},
 	"require-dev" : {
 		"phpunit/phpunit" : "4.3.*",
