@@ -28,7 +28,7 @@ class Cache implements CacheInterface
 
     private $connection;
 
-    public function __construct(\Redis $redisConnection= null)
+    public function __construct(\Redis $redisConnection = null)
     {
         $this->connection = $redisConnection === null ? new \Redis() : $redisConnection;
     }
@@ -110,8 +110,9 @@ class Cache implements CacheInterface
             null,
             $connectionOptions->retryDelay
         )) {
-            throw new RedisConnectionException("Can't connect to redis server with config: "
-                . var_export($connectionOptions, true));
+            throw new RedisConnectionException(
+                "Can't connect to redis server with config: " . var_export($connectionOptions, true)
+            );
         };
     }
 
@@ -124,8 +125,9 @@ class Cache implements CacheInterface
             $persistentId,
             $connectionOptions->retryDelay
         )) {
-            throw new RedisConnectionException("Can't connect to redis server with config: "
-                . var_export($connectionOptions, true));
+            throw new RedisConnectionException(
+                "Can't connect to redis server with config: " . var_export($connectionOptions, true)
+            );
         };
     }
 
@@ -154,9 +156,10 @@ class Cache implements CacheInterface
     {
         $dbId = $database + 0;
         if (!is_numeric($database) || !is_integer($dbId) || $dbId < 0) {
-            throw new RedisConnectionException("Can't select database '{$database}'. "
-            . "Should be a natural number.");
+            throw new RedisConnectionException(
+                "Can't select database '{$database}'. Should be a natural number."
+            );
         }
-        $this->connection->select( $database);
+        $this->connection->select($database);
     }
 }

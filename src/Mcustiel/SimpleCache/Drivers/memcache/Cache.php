@@ -95,8 +95,10 @@ class Cache implements CacheInterface
             $connectionOptions->port,
             $connectionOptions->timeout
         )) {
-            throw new MemcacheConnectionException("Can't connect to memcache server with config: "
-                . var_export($connectionOptions, true));
+            throw new MemcacheConnectionException(
+                "Can't connect to memcache server with config: "
+                . var_export($connectionOptions, true)
+            );
         };
     }
 
@@ -107,8 +109,10 @@ class Cache implements CacheInterface
             $connectionOptions->port,
             $connectionOptions->timeout
         )) {
-            throw new MemcacheConnectionException("Can't connect to memcache server with config: "
-                . var_export($connectionOptions, true));
+            throw new MemcacheConnectionException(
+                "Can't connect to memcache server with config: "
+                . var_export($connectionOptions, true)
+            );
         };
     }
 

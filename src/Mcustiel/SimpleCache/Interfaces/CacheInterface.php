@@ -21,13 +21,13 @@ use Mcustiel\SimpleCache\Types\Key;
 
 interface CacheInterface
 {
-    function init(\stdClass $initData = null);
+    public function init(\stdClass $initData = null);
 
-    function get(Key $key);
+    public function get(Key $key);
 
-    function set(Key $key, $value, $ttlInMillis);
+    public function set(Key $key, $value, $ttlInMillis);
 
-    function delete(Key $key);
+    public function delete(Key $key);
 
-    function finish();
+    public function finish();
 }
