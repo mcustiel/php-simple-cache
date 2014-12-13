@@ -130,7 +130,7 @@ class CacheTest extends \PHPUnit_Framework_TestCase
     public function testDatabaseInvalidFloat()
     {
         $options = new \stdClass();
-        $options->host = 'host';
+        $options->host = 'localhost';
         $options->database = 3.5;
 
         $this->redis
@@ -142,6 +142,20 @@ class CacheTest extends \PHPUnit_Framework_TestCase
             ->expects($this->never())
             ->method('select');
         $this->cache->init($options);
+    }
+
+    /**
+     * @expectedException        \Mcustiel\SimpleCache\Drivers\phpredis\Exceptions\RedisConnectionException
+     * @expectedExceptionMessage Redis driver exception was thrown
+     */
+    public function testRedisThrowsExceptionOnConnect()
+    {
+        $this->redis
+            ->expects($this->once())
+            ->method('connect')
+            ->with($this->equalTo(Cache::DEFAULT_HOST))
+            ->will($this->throwException(new \RedisException("Redis failed")));
+        $this->cache->init();
     }
 
     public function testDatabaseIsNumericString()
