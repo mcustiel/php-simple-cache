@@ -18,6 +18,7 @@
         <const name="TEST_MEMCACHE_CACHER" value="0" />
         <const name="MEMCACHE_HOST" value="localhost" />
         <const name="MEMCACHE_PORT" value="11211" />
+        <const name="MEMCACHE_TIMEOUT_SECONDS" value="1" />
         <const name="REDIS_HOST" value="127.0.0.1" /> 
         <const name="REDIS_PORT" value="6379" />
         <const name="REDIS_TIMEOUT_SECONDS" value="1" />

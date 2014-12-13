@@ -43,6 +43,41 @@ class Cache implements CacheInterface
         }
     }
 
+    /**
+     */
+    public function get(Key $key)
+    {
+        $value = $this->connection->get($key->getKeyName());
+
+        return $value === false ? null : $value;
+    }
+
+    /**
+     */
+    public function set(Key $key, $value, $ttlInMillis)
+    {
+        return $this->connection->set(
+            $key->getKeyName(),
+            $value,
+            null,
+            time() + floor($ttlInMillis / 1000)
+        );
+    }
+
+    /**
+     * (non-PHPdoc)
+     * @see \Mcustiel\SimpleCache\interfaces\CacheInterface::delete()
+     */
+    public function delete(Key $key)
+    {
+        $this->connection->delete($key->getKeyName());
+    }
+
+    public function finish()
+    {
+        $this->connection->close();
+    }
+
     private function openConnection(\stdClass $initData)
     {
         $connectionOptions = $this->parseConnectionData($initData);
@@ -85,40 +120,5 @@ class Cache implements CacheInterface
         $return->timeout = isset($initData->timeoutInSeconds) ? $initData->timeoutInSeconds : null;
 
         return $return;
-    }
-
-    /**
-     */
-    public function get(Key $key)
-    {
-        $value = $this->connection->get($key->getKeyName());
-
-        return $value === false ? null : $value;
-    }
-
-    /**
-     */
-    public function set(Key $key, $value, $ttlInMillis)
-    {
-        return $this->connection->set(
-            $key->getKeyName(),
-            $value,
-            null,
-            time() + floor($ttlInMillis / 1000)
-        );
-    }
-
-    /**
-     * (non-PHPdoc)
-     * @see \Mcustiel\SimpleCache\interfaces\CacheInterface::delete()
-     */
-    public function delete(Key $key)
-    {
-        $this->connection->delete($key->getKeyName());
-    }
-
-    public function finish()
-    {
-        $this->connection->close();
     }
 }

@@ -52,7 +52,7 @@ class CacheTest extends \PHPUnit_Framework_TestCase
                 $this->equalTo('localhost'),
                 $this->equalTo(1234),
                 $this->equalTo(1000)
-            );
+            )->will($this->returnValue(true));
         $this->cache->init($data);
     }
 
@@ -60,8 +60,30 @@ class CacheTest extends \PHPUnit_Framework_TestCase
     {
         $this->memcache
             ->expects($this->once())
-            ->method('connect');
+            ->method('connect')
+            ->will($this->returnValue(true));
         $this->cache->init();
+    }
+
+    /**
+     * @expectedException Mcustiel\SimpleCache\Drivers\memcache\Exceptions\MemcacheConnectionException
+     */
+    public function testIfThrowsExceptionWhenConnectionFails()
+    {
+        $data = new \stdClass();
+        $data->host = 'localhost';
+        $data->port = 1234;
+        $data->timeoutInSeconds = 1000;
+
+        $this->memcache
+            ->expects($this->once())
+            ->method('connect')
+            ->with(
+                $this->equalTo('localhost'),
+                $this->equalTo(1234),
+                $this->equalTo(1000)
+            )->will($this->returnValue(false));
+        $this->cache->init($data);
     }
 
     public function testIfReturnsNullWhenMemcacheReturnsFalse()
