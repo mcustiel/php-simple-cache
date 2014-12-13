@@ -110,9 +110,14 @@ Each driver has a unique configuration specification, the best way to avoid this
 
 ```php
 $config = new \stdClass()
+# Memcache server address, default is localhost
 $config->host = 'yourmemcached.host.com';
+# Memcache server port, default is php.ini:memcache.default_port
 $config->port = 11211;
+# Connection timeout in seconds, default is 1
 $config->timeoutInSeconds = 1;
+# Whether or not to use a persistent connection, default is false
+$config->persistent = false;
 ```
 
 #### Phpredis
