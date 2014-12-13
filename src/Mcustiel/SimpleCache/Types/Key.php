@@ -24,7 +24,7 @@ class Key
 
     private $keyName;
 
-    public function __construct($keyName, $timeoutInMilliseconds = 0)
+    public function __construct($keyName)
     {
         $this->keyName = $this->fixKeyChars($keyName);
     }

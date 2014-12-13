@@ -152,8 +152,8 @@ class Cache implements CacheInterface
 
     private function selectDatabase($database)
     {
-        $db = $database + 0;
-        if (!is_numeric($database) || !is_integer($db) || $db < 0) {
+        $dbId = $database + 0;
+        if (!is_numeric($database) || !is_integer($dbId) || $dbId < 0) {
             throw new RedisConnectionException("Can't select database '{$database}'. "
             . "Should be a natural number.");
         }
