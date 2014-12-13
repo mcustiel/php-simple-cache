@@ -119,11 +119,18 @@ $config->timeoutInSeconds = 1;
 
 ```php
 $config = new \stdClass()
+# Redis server address, default is localhost
 $config->host = 'yourredis.host.com';
+# Redis server port, default is null
 $config->port = 6379;
+# Connection timeout in seconds, default is null
 $config->timeoutInSeconds = 1;
+# Redis server auth password, default is null
 $config->password = 'yourRedisPasswd';
-$config->database = 'dbName';
+# Database number, default is 0 
+$config->database = 2;
+# Persistent connection id. If not specified, then  persistent connection is not used.
+$config->persistedId = 'yourPersistentConnectionId';
 ```
 
 #### File
