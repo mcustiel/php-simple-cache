@@ -115,7 +115,7 @@ $cacheManager->delete($key);
 
 ###Driver-specific configurations
 
-Each driver has a unique configuration specification, the best way to avoid this is to inject the dependencies into each driver but, if you need to use it the init() method, these are the config parameter for each driver:
+Each driver has a unique configuration specification, the best way to avoid this is to inject the dependencies into each driver but, if you need to use it the init() method, these are the config parameters for each driver:
 
 #### Memcache
 
@@ -152,8 +152,7 @@ $config->persistedId = 'yourPersistentConnectionId';
 #### File
 
 ```php
-$config = new \stdClass()
-$config->filesPath = '/path/to/cache/files';
+$fileService = new Mcustiel\SimpleCache\Drivers\file\Utils\FileService('/path/to/cache/files')
 ```
 
 ### Considerations
