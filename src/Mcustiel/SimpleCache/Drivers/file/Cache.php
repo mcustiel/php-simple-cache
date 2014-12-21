@@ -50,7 +50,7 @@ class Cache implements CacheInterface
     {
         if ($this->exists($key)) {
             $register = unserialize($this->fileService->getFrom($key->getKeyName()));
-            if ($register->getExpiration() >= microtime()) {
+            if ($register->getExpiration() == 0 || $register->getExpiration() >= microtime()) {
                 return $register->getData();
             }
             $this->delete($key);
@@ -66,7 +66,7 @@ class Cache implements CacheInterface
             $key->getKeyName(),
             serialize(new FileCacheRegister(
                 $value,
-                microtime() + $ttlInMillis * 1000
+                $ttlInMillis == 0 ? 0 : microtime() + $ttlInMillis * 1000
             ))
         );
     }
