@@ -7,20 +7,20 @@
 		"minimalist",
 		"simple"
 	],
-    "authors" : [{
-            "name" : "Mariano Custiel",
-            "email" : "jmcustiel@gmail.com",
-            "homepage" : "https://github.com/mcustiel",
-            "role" : "Developer"
-        }
-    ],
+	"authors" : [{
+			"name" : "Mariano Custiel",
+			"email" : "jmcustiel@gmail.com",
+			"homepage" : "https://github.com/mcustiel",
+			"role" : "Developer"
+		}
+	],
 	"autoload" : {
 		"psr-4" : {
 			"Mcustiel\\SimpleCache\\" : "src"
 		}
 	},
 	"name" : "mcustiel/php-simple-cache",
-	"version" : "1.3.1",
+	"version" : "1.4",
 	"type" : "library",
 	"description" : "A simple library to abstract different cache servers.",
 	"license" : "GPL-3.0+",
