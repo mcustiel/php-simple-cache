@@ -29,8 +29,11 @@ class FileService
     public function __construct($filesPath = null)
     {
         $this->filesPath = empty($filesPath) ?
-            '/tmp/php-simple-config/cache/' :
+            sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'php-simple-config/cache/' :
             rtrim($filesPath, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
+        if (!is_dir($this->filesPath)) {
+            mkdir($this->filesPath, 0777, true);
+        }
     }
 
     public function setFilesPath($filesPath)
