@@ -20,7 +20,6 @@
 		}
 	},
 	"name" : "mcustiel/php-simple-cache",
-	"version" : "1.4.1",
 	"type" : "library",
 	"description" : "A simple library to abstract different cache servers.",
 	"license" : "GPL-3.0+",
