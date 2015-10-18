@@ -18,13 +18,19 @@
 namespace Mcustiel\SimpleCache\Drivers\memcache;
 
 use Mcustiel\SimpleCache\Interfaces\CacheInterface;
-use Mcustiel\SimpleCache\Types\Key;
 use Mcustiel\SimpleCache\Drivers\memcache\Exceptions\MemcacheConnectionException;
+use Mcustiel\SimpleCache\Interfaces\KeyInterface;
 
 class Cache implements CacheInterface
 {
+    /**
+     * @var \Memcache
+     */
     private $connection;
 
+    /**
+     * @param \Memcache $memcacheConnection optional A Memcache object.
+     */
     public function __construct(\Memcache $memcacheConnection = null)
     {
         $this->connection = $memcacheConnection === null ?
@@ -33,6 +39,10 @@ class Cache implements CacheInterface
     }
 
     /**
+     * {@inheritDoc}
+     * Connects to Memcache.
+     *
+     * @see \Mcustiel\SimpleCache\Interfaces\CacheInterface::init()
      */
     public function init(\stdClass $initData = null)
     {
@@ -44,8 +54,10 @@ class Cache implements CacheInterface
     }
 
     /**
+     * {@inheritDoc}
+     * @see \Mcustiel\SimpleCache\Interfaces\CacheInterface::get()
      */
-    public function get(Key $key)
+    public function get(KeyInterface $key)
     {
         $value = $this->connection->get($key->getKeyName());
 
@@ -53,8 +65,10 @@ class Cache implements CacheInterface
     }
 
     /**
+     * {@inheritDoc}
+     * @see \Mcustiel\SimpleCache\Interfaces\CacheInterface::set()
      */
-    public function set(Key $key, $value, $ttlInMillis)
+    public function set(KeyInterface $key, $value, $ttlInMillis)
     {
         return $this->connection->set(
             $key->getKeyName(),
@@ -65,19 +79,39 @@ class Cache implements CacheInterface
     }
 
     /**
-     * (non-PHPdoc)
-     * @see \Mcustiel\SimpleCache\interfaces\CacheInterface::delete()
+     * {@inheritDoc}
+     * @see \Mcustiel\SimpleCache\Interfaces\CacheInterface::delete()
      */
-    public function delete(Key $key)
+    public function delete(KeyInterface $key)
     {
         $this->connection->delete($key->getKeyName());
     }
 
+    /**
+     * {@inheritDoc}
+     * @see \Mcustiel\SimpleCache\Interfaces\CacheInterface::finish()
+     */
     public function finish()
     {
-        $this->connection->close();
+        if ($this->connection !== null) {
+            $this->connection->close();
+            $this->connection = null;
+        }
     }
 
+    /**
+     * Class destructor. Calls finish method.
+     */
+    public function __destruct()
+    {
+        $this->finish();
+    }
+
+    /**
+     * Opens a connection to memcached server.
+     *
+     * @param \stdClass $initData
+     */
     private function openConnection(\stdClass $initData)
     {
         $connectionOptions = $this->parseConnectionData($initData);
@@ -88,6 +122,12 @@ class Cache implements CacheInterface
         }
     }
 
+    /**
+     *
+     * @param \stdClass $connectionOptions
+     *
+     * @throws \Mcustiel\SimpleCache\Drivers\memcache\Exceptions\MemcacheConnectionException
+     */
     private function notPersistentConnect(\stdClass $connectionOptions)
     {
         if (!$this->connection->connect(
@@ -102,6 +142,11 @@ class Cache implements CacheInterface
         };
     }
 
+    /**
+      * @param \stdClass $connectionOptions
+      *
+      * @throws \Mcustiel\SimpleCache\Drivers\memcache\Exceptions\MemcacheConnectionException
+      */
     private function persistentConnect(\stdClass $connectionOptions)
     {
         if (!$this->connection->pconnect(
@@ -116,6 +161,12 @@ class Cache implements CacheInterface
         };
     }
 
+    /**
+     * Fixes memcached configuration.
+     *
+     * @param \stdClass $initData
+     * @return \stdClass
+     */
     private function parseConnectionData(\stdClass $initData)
     {
         $return = new \stdClass;

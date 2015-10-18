@@ -18,21 +18,26 @@
 namespace Mcustiel\SimpleCache\Drivers\file;
 
 use Mcustiel\SimpleCache\Interfaces\CacheInterface;
-use Mcustiel\SimpleCache\Types\Key;
 use Mcustiel\SimpleCache\Drivers\file\Exceptions\FilesCachePathNotAssigned;
 use Mcustiel\SimpleCache\Drivers\file\Utils\FileService;
 use Mcustiel\SimpleCache\Drivers\file\Utils\FileCacheRegister;
+use Mcustiel\SimpleCache\Interfaces\KeyInterface;
 
 class Cache implements CacheInterface
 {
     private $fileService;
 
+    /**
+     * @param \Mcustiel\SimpleCache\Drivers\file\Utils\FileService $fileService
+     */
     public function __construct(FileService $fileService = null)
     {
         $this->fileService = $fileService === null ? new FileService() : $fileService;
     }
 
     /**
+     * {@inheritDoc}
+     * @see \Mcustiel\SimpleCache\Interfaces\CacheInterface::init()
      */
     public function init(\stdClass $initData = null)
     {
@@ -45,8 +50,10 @@ class Cache implements CacheInterface
     }
 
     /**
+     * {@inheritDoc}
+     * @see \Mcustiel\SimpleCache\Interfaces\CacheInterface::get()
      */
-    public function get(Key $key)
+    public function get(KeyInterface $key)
     {
         if ($this->exists($key)) {
             $register = unserialize($this->fileService->getFrom($key->getKeyName()));
@@ -59,8 +66,10 @@ class Cache implements CacheInterface
     }
 
     /**
+     * {@inheritDoc}
+     * @see \Mcustiel\SimpleCache\Interfaces\CacheInterface::set()
      */
-    public function set(Key $key, $value, $ttlInMillis)
+    public function set(KeyInterface $key, $value, $ttlInMillis)
     {
         $this->fileService->saveIn(
             $key->getKeyName(),
@@ -72,23 +81,29 @@ class Cache implements CacheInterface
     }
 
     /**
-     * (non-PHPdoc)
-     * @see \Mcustiel\SimpleCache\Drivers\BaseCacheDriver::delete()
+     * {@inheritDoc}
+     * @see \Mcustiel\SimpleCache\Interfaces\CacheInterface::delete()
      */
-    public function delete(Key $key)
+    public function delete(KeyInterface $key)
     {
         if ($this->exists($key)) {
             $this->fileService->delete($key->getKeyName());
         }
     }
 
+    /**
+     * {@inheritDoc}
+     * @see \Mcustiel\SimpleCache\Interfaces\CacheInterface::finish()
+     */
     public function finish()
     {
     }
 
     /**
+     * @param \Mcustiel\SimpleCache\Types\Key $key
+     * @return boolean
      */
-    private function exists(Key $key)
+    private function exists(KeyInterface $key)
     {
         return $this->fileService->exists($key->getKeyName());
     }

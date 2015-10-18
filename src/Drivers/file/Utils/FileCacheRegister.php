@@ -17,8 +17,6 @@
  */
 namespace Mcustiel\SimpleCache\Drivers\file\Utils;
 
-use Mcustiel\SimpleCache\Types\Key;
-
 class FileCacheRegister implements \Serializable
 {
     private $data;

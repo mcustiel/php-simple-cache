@@ -17,41 +17,15 @@
  */
 namespace Mcustiel\SimpleCache\Types;
 
-use Mcustiel\SimpleCache\Interfaces\KeyInterface;
-
-class Key implements KeyInterface
+class PrefixedKey extends Key
 {
-    const INVALID_CHARS_REGEXP = '/[^a-z\-_0-9.]/i';
-    const KEY_PREFIX = '_PSC-key_';
-
     /**
      * @var string
      */
     private $keyName;
 
-    public function __construct($keyName)
+    public function __construct($prefix, $keyName)
     {
-        $this->keyName = $this->fixKeyChars($keyName);
-    }
-
-    public function getKeyName()
-    {
-        return $this->keyName;
-    }
-
-    public function __toString()
-    {
-        return $this->keyName;
-    }
-
-    /**
-     * Fixes the string to remove unallowed characters
-     *
-     * @param string $key
-     * @return string
-     */
-    protected function fixKeyChars($key)
-    {
-        return preg_replace(self::INVALID_CHARS_REGEXP, '', $key);
+        $this->keyName = $this->fixKeyChars($prefix . $keyName);
     }
 }

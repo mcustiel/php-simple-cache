@@ -15,43 +15,17 @@
  * You should have received a copy of the GNU General Public License
  * along with php-simple-cache.  If not, see <http://www.gnu.org/licenses/>.
  */
-namespace Mcustiel\SimpleCache\Types;
+namespace Mcustiel\SimpleCache\Interfaces;
 
-use Mcustiel\SimpleCache\Interfaces\KeyInterface;
-
-class Key implements KeyInterface
+interface KeyInterface
 {
-    const INVALID_CHARS_REGEXP = '/[^a-z\-_0-9.]/i';
-    const KEY_PREFIX = '_PSC-key_';
+    /**
+     * Returns a key name that is suitable for the cache implementation being used.
+     */
+    public function getKeyName();
 
     /**
-     * @var string
+     * Returns a key name that is suitable for the cache implementation being used.
      */
-    private $keyName;
-
-    public function __construct($keyName)
-    {
-        $this->keyName = $this->fixKeyChars($keyName);
-    }
-
-    public function getKeyName()
-    {
-        return $this->keyName;
-    }
-
-    public function __toString()
-    {
-        return $this->keyName;
-    }
-
-    /**
-     * Fixes the string to remove unallowed characters
-     *
-     * @param string $key
-     * @return string
-     */
-    protected function fixKeyChars($key)
-    {
-        return preg_replace(self::INVALID_CHARS_REGEXP, '', $key);
-    }
+    public function __toString();
 }

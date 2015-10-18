@@ -1,8 +1,24 @@
 <?php
+/**
+ * This file is part of php-simple-cache.
+ *
+ * php-simple-cache is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * php-simple-cache is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with php-simple-cache.  If not, see <http://www.gnu.org/licenses/>.
+ */
 namespace Mcustiel\SimpleCache\Drivers\apcu;
 
 use Mcustiel\SimpleCache\Interfaces\CacheInterface;
-use Mcustiel\SimpleCache\Types\Key;
+use Mcustiel\SimpleCache\Interfaces\KeyInterface;
 
 class Cache implements CacheInterface
 {
@@ -12,19 +28,20 @@ class Cache implements CacheInterface
      * @see \Mcustiel\SimpleCache\Interfaces\CacheInterface::init()
      */
     public function init(\stdClass $initData = null)
-    {}
+    {
+    }
 
     /**
      * {@inheritDoc}
      *
      * @see \Mcustiel\SimpleCache\Interfaces\CacheInterface::get()
      */
-    public function get(Key $key)
+    public function get(KeyInterface $key)
     {
-        $ok = true;
-        $value = apc_fetch($key->__toString(), $ok);
+        $success = true;
+        $value = apc_fetch($key->__toString(), $success);
 
-        return $ok ? $value : null;
+        return $success ? $value : null;
     }
 
     /**
@@ -32,7 +49,7 @@ class Cache implements CacheInterface
      *
      * @see \Mcustiel\SimpleCache\Interfaces\CacheInterface::set()
      */
-    public function set(Key $key, $value, $ttlInMillis)
+    public function set(KeyInterface $key, $value, $ttlInMillis)
     {
         return apc_store($key->__toString(), $value, (int) $ttlInMillis / 1000);
     }
@@ -42,7 +59,7 @@ class Cache implements CacheInterface
      *
      * @see \Mcustiel\SimpleCache\Interfaces\CacheInterface::delete()
      */
-    public function delete(Key $key)
+    public function delete(KeyInterface $key)
     {
         return apc_delete($key->__toString());
     }
@@ -53,5 +70,6 @@ class Cache implements CacheInterface
      * @see \Mcustiel\SimpleCache\Interfaces\CacheInterface::finish()
      */
     public function finish()
-    {}
+    {
+    }
 }

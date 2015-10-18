@@ -18,22 +18,33 @@
 namespace Mcustiel\SimpleCache\Drivers\phpredis;
 
 use Mcustiel\SimpleCache\Interfaces\CacheInterface;
-use Mcustiel\SimpleCache\Types\Key;
 use Mcustiel\SimpleCache\Drivers\phpredis\Exceptions\RedisAuthenticationException;
 use Mcustiel\SimpleCache\Drivers\phpredis\Exceptions\RedisConnectionException;
+use Mcustiel\SimpleCache\Interfaces\KeyInterface;
 
 class Cache implements CacheInterface
 {
     const DEFAULT_HOST = 'localhost';
 
+    /**
+     * @var \Redis
+     */
     private $connection;
 
+    /**
+     * @param \Redis $redisConnection A Redis object
+     */
     public function __construct(\Redis $redisConnection = null)
     {
         $this->connection = $redisConnection === null ? new \Redis() : $redisConnection;
     }
 
     /**
+     * {@inheritDoc}
+     * Opens a connection to redis server.
+     *
+     * @throws \Mcustiel\SimpleCache\Drivers\phpredis\Exceptions\RedisConnectionException
+     * @see \Mcustiel\SimpleCache\Interfaces\CacheInterface::init()
      */
     public function init(\stdClass $initData = null)
     {
@@ -49,16 +60,20 @@ class Cache implements CacheInterface
     }
 
     /**
+     * {@inheritDoc}
+     * @see \Mcustiel\SimpleCache\Interfaces\CacheInterface::get()
      */
-    public function get(Key $key)
+    public function get(KeyInterface $key)
     {
         $value = $this->connection->get($key);
         return $value === false? null : unserialize($value);
     }
 
     /**
+     * {@inheritDoc}
+     * @see \Mcustiel\SimpleCache\Interfaces\CacheInterface::set()
      */
-    public function set(Key $key, $value, $ttlInMillis)
+    public function set(KeyInterface $key, $value, $ttlInMillis)
     {
         return $this->connection->psetex(
             $key,
@@ -67,19 +82,39 @@ class Cache implements CacheInterface
         );
     }
 
-    public function delete(Key $key)
+    /**
+     * {@inheritDoc}
+     * @see \Mcustiel\SimpleCache\Interfaces\CacheInterface::delete()
+     */
+    public function delete(KeyInterface $key)
     {
         $this->connection->delete($key->getKeyName());
     }
 
+    /**
+     * {@inheritDoc}
+     * @see \Mcustiel\SimpleCache\Interfaces\CacheInterface::finish()
+     */
     public function finish()
     {
-        $this->connection->close();
+        if ($this->connection !== null) {
+            $this->connection->close();
+            $this->connection = null;
+        }
     }
+
     /**
-     *
+     * Class destructor. Calls finish method.
+     */
+    public function __destruct()
+    {
+        $this->finish();
+    }
+
+    /**
      * @param string $password
-     * @throws RedisAuthenticationException
+     *
+     * @throws \Mcustiel\SimpleCache\Drivers\phpredis\Exceptions\RedisAuthenticationException
      */
     private function authenticate($password)
     {
@@ -88,6 +123,11 @@ class Cache implements CacheInterface
         }
     }
 
+    /**
+     * @param \stdClass $initData
+     *
+     * @return \stdClass
+     */
     private function parseConnectionData(\stdClass $initData)
     {
         $return = new \stdClass;
@@ -101,6 +141,11 @@ class Cache implements CacheInterface
         return $return;
     }
 
+    /**
+     * @param \stdClass $connectionOptions
+     *
+     * @throws \Mcustiel\SimpleCache\Drivers\phpredis\Exceptions\RedisConnectionException
+     */
     private function notPersistentConnect(\stdClass $connectionOptions)
     {
         if (!$this->connection->connect(
@@ -116,6 +161,12 @@ class Cache implements CacheInterface
         };
     }
 
+    /**
+     * @param \stdClass $connectionOptions
+     * @param string $persistentId
+     *
+     * @throws \Mcustiel\SimpleCache\Drivers\phpredis\Exceptions\RedisConnectionException
+     */
     private function persistentConnect(\stdClass $connectionOptions, $persistentId)
     {
         if (!$this->connection->pconnect(
@@ -131,6 +182,11 @@ class Cache implements CacheInterface
         };
     }
 
+    /**
+     * @param \stdClass $initData
+     *
+     * @throws \Mcustiel\SimpleCache\Drivers\phpredis\Exceptions\RedisConnectionException
+     */
     private function openConnection(\stdClass $initData)
     {
         $connectionOptions = $this->parseConnectionData($initData);
@@ -142,6 +198,12 @@ class Cache implements CacheInterface
         $this->executePostConnectionOptions($initData);
     }
 
+    /**
+     * @param \stdClass $initData
+     *
+     * @throws \Mcustiel\SimpleCache\Drivers\phpredis\Exceptions\RedisAuthenticationException
+     * @throws \Mcustiel\SimpleCache\Drivers\phpredis\Exceptions\RedisConnectionException
+     */
     private function executePostConnectionOptions(\stdClass $initData)
     {
         if (isset($initData->password)) {
@@ -152,10 +214,14 @@ class Cache implements CacheInterface
         }
     }
 
+    /**
+     * @param unknown $database
+     *
+     * @throws \Mcustiel\SimpleCache\Drivers\phpredis\Exceptions\RedisConnectionException
+     */
     private function selectDatabase($database)
     {
-        $dbId = $database + 0;
-        if (!is_numeric($database) || !is_integer($dbId) || $dbId < 0) {
+        if (!is_integer($database) || $database < 0) {
             throw new RedisConnectionException(
                 "Can't select database '{$database}'. Should be a natural number."
             );

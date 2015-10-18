@@ -17,17 +17,43 @@
  */
 namespace Mcustiel\SimpleCache\Interfaces;
 
-use Mcustiel\SimpleCache\Types\Key;
-
 interface CacheInterface
 {
+    /**
+     * Initializes the cache manager with specific required data.
+     * This method should be called once after object construction.
+     *
+     * @param \stdClass $initData optional Data needed to init the driver.
+     *
+     * @throws \Mcustiel\SimpleCache\Exceptions\PhpSimpleCacheException On initialization error.
+     */
     public function init(\stdClass $initData = null);
 
-    public function get(Key $key);
+    /**
+     * Returns the stored value associated with the given key. If it does not exists, returns null.
+     *
+     * @param KeyInterface $key
+     */
+    public function get(KeyInterface $key);
 
-    public function set(Key $key, $value, $ttlInMillis);
+    /**
+     * @param KeyInterface $key         A key to identified the stored value
+     * @param mixed        $value       The value to store in cache
+     * @param integer      $ttlInMillis Cache time to live in milliseconds
+     *
+     * @return boolean True on success, false otherwise
+     */
+    public function set(KeyInterface $key, $value, $ttlInMillis);
 
-    public function delete(Key $key);
+    /**
+     * Deletes the stored value in the cache associated with the given key.
+     *
+     * @param KeyInterface $key The stored key
+     */
+    public function delete(KeyInterface $key);
 
+    /**
+     * Terminates any initialized data set up in the init method.
+     */
     public function finish();
 }
