@@ -22,9 +22,10 @@ use Mcustiel\SimpleCache\Exceptions\UnknownDriverException;
 class SimpleCache
 {
     /**
+     * @param string $cacheManager
      *
-     * @param unknown $cacheManager
      * @return \Mcustiel\SimpleCache\interfaces\CacheInterface
+     * @throws \Mcustiel\SimpleCache\Exceptions\UnknownDriverException
      */
     public function getCacheManager($cacheManager)
     {
@@ -35,6 +36,11 @@ class SimpleCache
         return new $class;
     }
 
+    /**
+     * @param string $cacheManager
+     *
+     * @return string
+     */
     public function getFullManagerPath($cacheManager)
     {
         return "\\Mcustiel\\SimpleCache\\Drivers\\{$cacheManager}\\Cache";
