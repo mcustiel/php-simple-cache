@@ -10,6 +10,7 @@ Currently the cache systems abstracted by php-simple-cache are:
 * **Serialized files ("file" driver)**: Uses files saved in a directory containing the serialized data.
 * **Memcache ("memcache" driver)**: Uses php's memcache extension through \Memcache class to access a memcached server.
 * **Redis ("phpredis" driver)**: Uses php's phpredis extension through \Redis class
+* **APCu ("apcu" driver)**: Uses apcu pecl extension for fast local cache.
 
 This library is thought to be used with or without a dependency injection system, that's why the constructor of each driver allows the injection of it's dependencies. If you don't use a dependency injection system, maybe you just want to use a provided factory class that instantiates each driver by it's name, but you need to call init method to configure the driver after it's instantiated.
 
@@ -159,4 +160,4 @@ $fileService = new Mcustiel\SimpleCache\Drivers\file\Utils\FileService('/path/to
 
 Please have in mind that each driver is different in it's implementation. There's no much difference between phpredis and memcache drivers, but file driver does not auto expire cache.
 For the file case I added support for timeout but that makes it a slow cache, so for the future I have as a TODO, to create a "garbage collector" script that processes expired files and remove the logic to delete expired files in get method. 
-Use file driver just in very rare cases in which you don't have access to memcache or redis.
+Use file driver just in very rare cases in which you don't have access to memcache or redis or for development environment.
