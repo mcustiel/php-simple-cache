@@ -17,10 +17,10 @@ This library is thought to be used with or without a dependency injection system
 Installation
 ============
 
-###Download code
+### Download code
 This library supports PSR-4 so you can just download the code and map your autoloader to use it.
 
-###Composer
+### Composer
 php-simple-config also supports composer, just add the packagist dependency: 
 ```javascript
 {
@@ -31,31 +31,14 @@ php-simple-config also supports composer, just add the packagist dependency:
 }
 ```
 
-Or download it directly from the repository using something like this:
-
-```javascript
-{
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "https://github.com/mcustiel/php-simple-cache"
-        }
-    ],
-    "require": {
-    	// ---
-        "mcustiel/php-simple-cache": "dev-master"
-    }
-}
-```
-
 How to use it
 =============
 
-###Driver instantiation
+### Driver instantiation
 
 There's a variety of ways to instantiate the drivers, as an example **memcache** driver is used:
 
-####Simple instantiation
+#### Simple instantiation
 
 ```php
 $cacheManager = new \Mcustiel\SimpleCache\Drivers\memcache\Cache();
@@ -74,7 +57,7 @@ $cacheManager = new \Mcustiel\SimpleCache\Drivers\memcache\Cache($connection);
 // No init() call required here.
 ```
 
-####Using provided factory class
+#### Using provided factory class
 
 ```php
 use \Mcustiel\SimpleCache\SimpleCache;
@@ -88,7 +71,7 @@ $config->timeout = 1;
 $cacheManager->init($config);
 ```
 
-###Caching and retrieving data
+### Caching and retrieving data
 
 Using php-simple-cache for caching data and retrieve it after is really simple, the idea is (as in most cache systems) to check if data is cached, if not generate the data and cache it.
 
@@ -103,7 +86,7 @@ if ($data === null) {
 }
 ```
 
-###Removing cached data
+### Removing cached data
 
 When there is cached data that isn't needed to be cached anymore, just use the delete method:
 
@@ -114,7 +97,7 @@ $key = new Key('cached-data-key');
 $cacheManager->delete($key);
 ```
 
-###Driver-specific configurations
+### Driver-specific configurations
 
 Each driver has a unique configuration specification, the best way to avoid this is to inject the dependencies into each driver but, if you need to use it the init() method, these are the config parameters for each driver:
 
