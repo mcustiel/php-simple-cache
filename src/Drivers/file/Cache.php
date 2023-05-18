@@ -75,7 +75,7 @@ class Cache implements CacheInterface
             $key->getKeyName(),
             serialize(new FileCacheRegister(
                 $value,
-                $ttlInMillis == 0 ? 0 : microtime() + $ttlInMillis * 1000
+                $ttlInMillis == 0 ? 0 : microtime(1) + $ttlInMillis * 1000
             ))
         );
     }
